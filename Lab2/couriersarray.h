@@ -2,6 +2,7 @@
 #define COURIERSARRAY_H
 
 #include "courier.h"
+#include "order.h"
 
 class CouriersArray
 {
@@ -40,12 +41,12 @@ public:
         c_arr[n].capacity = cap;
     }
 
-    void set_ord(int n, int m, int e) {
+    void set_ord(int n, int m, order e) {
         c_arr[n].orders[m] = e;
     }
 
     void add_cap(int n, int wcap) {
-        c_arr[n].currCap = wcap;
+        c_arr[n].currCap += wcap;
     }
 
     void inc_ords(int n) {

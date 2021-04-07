@@ -322,8 +322,8 @@ void MainWindow::distOrders() {
             QTime _deliverTo= QTime::fromString(o_arr->get_elem(j).deliveryRange.mid(19, 5), "hh:mm");
             if(!o_arr->get_elem(j).isDistributed) {
             if(o_arr->get_elem(j).weight < c_arr->get_elem(i).capacity && _workFrom <= _deliverFrom && _workTo >= _deliverTo) {
-                if(c_arr->get_elem(i).currCap <= c_arr->get_elem(i).capacity) {
-                    c_arr->set_ord(i, _o++, o_arr->get_elem(j).ordNumber);
+                if(c_arr->get_elem(i).currCap + o_arr->get_elem(j).weight <= c_arr->get_elem(i).capacity) {
+                    c_arr->set_ord(i, _o++, o_arr->get_elem(j));
                     o_arr->set_bool(j, true);
                     c_arr->add_cap(i, o_arr->get_elem(j).weight);
                     c_arr->inc_ords(i);
@@ -332,19 +332,6 @@ void MainWindow::distOrders() {
         }
     }
     }
-    /*
-    for(int r; r < MainWindow::k; r++) {
-    for (int i = 0; i < c_arr->get_elem(r).distdOr - 1; i++) {
-            for (int j = 0; j < c_arr->get_elem(i).distdOr - i - 1; j++) {
-                if (QTime::fromString(c_arr->get_elem(r).workTime.mid(8, 5), "hh:mm") > QTime::fromString(c_arr->get_elem(r+1).workTime.mid(8, 5), "hh:mm")) {
-                    int temp = c_arr->get_elem(r).orders[j];
-                    c_arr->set_ord(r, j, c_arr->get_elem(r).orders[j+1]);
-                    c_arr->set_ord(r, ++j, temp);
-                }
-            }
-        }
-    }
-    */
 }
 
 void MainWindow::on_pushButton_Dist_clicked()
@@ -356,7 +343,7 @@ void MainWindow::on_pushButton_Dist_clicked()
     ui->textEditInfo->insertPlainText(QString::number(c_arr->get_elem(i).crNumber) + "\n");
     ui->textEditInfo->insertPlainText("Заказы на доставку: ");
     for(int j = 0; j < c_arr->get_elem(i).distdOr; j++) {
-    ui->textEditInfo->insertPlainText(QString::number(c_arr->get_elem(i).orders[j]) + " ");
+    ui->textEditInfo->insertPlainText(QString::number(c_arr->get_elem(i).orders[j].ordNumber) + " ");
     }
     ui->textEditInfo->insertPlainText("\n~~~~~~~~~~~~~~~~~\n");
     }
@@ -366,10 +353,23 @@ void MainWindow::on_pushButton_Dist_clicked()
 
 void MainWindow::on_pushButton_CrOrd_clicked()
 {
+    for(int r = 0; r < MainWindow::k; r++) {
+    for (int i = 0; i < c_arr->get_elem(r).distdOr - 1; i++) {
+            for (int j = 0; j < c_arr->get_elem(r).distdOr - i - 1; j++) {
+                if (QTime::fromString(c_arr->get_elem(r).orders[j].deliveryRange.mid(11, 5), "hh:mm") > QTime::fromString(c_arr->get_elem(r).orders[j+1].deliveryRange.mid(11, 5), "hh:mm")) {
+                    order temp = c_arr->get_elem(r).orders[j];
+                    c_arr->set_ord(r, j, c_arr->get_elem(r).orders[j+1]);
+                    c_arr->set_ord(r, ++j, temp);
+                }
+            }
+        }
+    }
     ui->textEditInfo->clear();
     ui->textEditInfo->insertPlainText("Заказы курьера №" + QString::number(c_arr->get_elem(ui->comboBox_2->currentIndex()).crNumber) + ":");
     for(int j = 0; j < c_arr->get_elem(ui->comboBox_2->currentIndex()).distdOr; j++) {
-    ui->textEditInfo->insertPlainText('\n' + QString::number(c_arr->get_elem(ui->comboBox_2->currentIndex()).orders[j]));
+    ui->textEditInfo->insertPlainText('\n' + QString::number(c_arr->get_elem(ui->comboBox_2->currentIndex()).orders[j].ordNumber));
+    ui->textEditInfo->insertPlainText('\n' + c_arr->get_elem(ui->comboBox_2->currentIndex()).orders[j].deliveryRange.mid(11));
+    ui->textEditInfo->insertPlainText("\n~~~~~~~~~~~~~~~~~");
     }
 }
 

@@ -1,6 +1,7 @@
 #ifndef COURIER_H
 #define COURIER_H
 #include <QTextStream>
+#include "order.h"
 
 class courier
 {
@@ -17,9 +18,9 @@ public:
 
     int capacity;
 
-    int currCap;
+    int currCap = 0;
 
-    int *orders = new int[1000];
+    order *orders = new order[1000];
 
     int distdOr = 0;
 };
